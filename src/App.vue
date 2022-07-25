@@ -4,7 +4,7 @@
             <AniCard v-model="isActive" />
         </div>
         <div class="lottie-wrapper">
-            <AniGift v-model="isActive" />
+            <AniGift v-model="isActive" @click="requestOrientationPermission" />
         </div>
     </div>
 </template>
@@ -21,8 +21,6 @@ let x = 0;
 let y = 0;
 let mx = 0;
 let my = 0;
-let orientNumX = 0;
-let orientNumY = 0;
 let perNum = 20;
 
 function loop() {
@@ -57,11 +55,22 @@ function init() {
     const isMobile = mobileCheck();
     if (isMobile) {
         perNum = 0.8;
-        if (
-            typeof DeviceMotionEvent !== "undefined" &&
-            typeof DeviceMotionEvent.requestPermission === "function"
-        ) {
-            DeviceMotionEvent.requestPermission().then((res) => {
+    } else {
+        window.addEventListener("mousemove", function (e) {
+            x = e.clientX - window.innerWidth / 2;
+            y = e.clientY - window.innerHeight / 2;
+        });
+    }
+    loop();
+}
+
+function requestOrientationPermission() {
+    if (
+        typeof DeviceMotionEvent !== "undefined" &&
+        typeof DeviceMotionEvent.requestPermission === "function"
+    ) {
+        DeviceMotionEvent.requestPermission()
+            .then((res) => {
                 if (res == "granted") {
                     window.addEventListener(
                         "deviceorientation",
@@ -72,15 +81,11 @@ function init() {
                         false,
                     );
                 }
-            });
-        }
+            })
+            .catch(console.error);
     } else {
-        window.addEventListener("mousemove", function (e) {
-            x = e.clientX - window.innerWidth / 2;
-            y = e.clientY - window.innerHeight / 2;
-        });
+        console.error("DeviceMotionEvent is not defined");
     }
-    loop();
 }
 
 onMounted(init);
