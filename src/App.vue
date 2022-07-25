@@ -57,15 +57,22 @@ function init() {
     const isMobile = mobileCheck();
     if (isMobile) {
         perNum = 0.8;
-        if (window.DeviceOrientationEvent) {
-            window.addEventListener(
-                "deviceorientation",
-                function (event) {
-                    x = event.gamma;
-                    y = event.beta - 50;
-                },
-                false,
-            );
+        if (
+            typeof DeviceMotionEvent !== "undefined" &&
+            typeof DeviceMotionEvent.requestPermission === "function"
+        ) {
+            DeviceMotionEvent.requestPermission().then((res) => {
+                if (res == "granted") {
+                    window.addEventListener(
+                        "deviceorientation",
+                        function (e) {
+                            x = e.gamma;
+                            y = e.beta - 50;
+                        },
+                        false,
+                    );
+                }
+            });
         }
     } else {
         window.addEventListener("mousemove", function (e) {
