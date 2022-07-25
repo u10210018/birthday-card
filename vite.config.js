@@ -7,5 +7,5 @@ export default defineConfig({
   css: {
     devSourcemap: true,
   },
-  base: "/birthday-card/",
+  base: process.env.NODE_ENV === "production" ? "/birthday-card/" : "/",
 })
